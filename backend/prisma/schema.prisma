@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   // "STUDENT", "TEACHER", "ADMIN"
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  courses      Course[]
+  enrollments  Enrollment[]
+  messages     Message[]
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String
+  code        String
+  teacherId   String
+  teacher     User     @relation(fields: [teacherId], references: [id])
+  sections    Section[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Section {
+  id           String   @id @default(uuid())
+  name         String
+  semester     String   @default("Fall 2025")
+  isActive     Boolean  @default(true)
+  chatRoomId   String   @unique @default(cuid())
+  chatPassword String   @default("123456")
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id])
+  enrollments  Enrollment[]
+  messages     Message[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, sectionId])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id])
+  createdAt DateTime @default(now())
+}
