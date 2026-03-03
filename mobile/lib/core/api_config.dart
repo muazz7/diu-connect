@@ -5,7 +5,7 @@ class ApiConfig {
   static String get baseUrl {
     if (kReleaseMode) {
       // Production URL (Vercel deployment)
-      return 'https://your-vercel-domain.vercel.app/api';
+      return 'https://diu-connect.vercel.app/api';
     } else {
       // Development URL
       if (kIsWeb) {
