@@ -4,8 +4,12 @@ import 'dart:io';
 class ApiConfig {
   static String get baseUrl {
     if (kReleaseMode) {
-      // Production URL (Vercel deployment)
-      return 'https://diu-connect.vercel.app/api';
+      if (kIsWeb) {
+        // Use relative URL on web to bypass any domain or CORS redirect issues
+        return '/api';
+      }
+      // Production URL for mobile app deployment (Vercel)
+      return 'https://diuconnect.vercel.app/api';
     } else {
       // Development URL
       if (kIsWeb) {
