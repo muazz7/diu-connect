@@ -1117,156 +1117,345 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   // ── Bottom sheets ──
+
   void _showCreate() {
-    final n = TextEditingController(), c = TextEditingController();
+    final n = TextEditingController();
+    final c = TextEditingController();
     final s = TextEditingController(text: 'Spring 2026');
-    final ri = TextEditingController(), rp = TextEditingController();
+    final ri = TextEditingController();
+    final rp = TextEditingController();
+    bool isCreating = false;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: EdgeInsets.fromLTRB(
-            24, 20, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                        color: AppTheme.borderStrong,
-                        borderRadius: BorderRadius.circular(2))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 40,
+                    offset: const Offset(0, 10),
+                  )
+                ],
               ),
-              const SizedBox(height: 20),
-              Text('New course',
-                  style: GoogleFonts.inter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3)),
-              const SizedBox(height: 2),
-              Text('Create a room for your students',
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppTheme.textLight)),
-              const SizedBox(height: 20),
-              _field(n, 'Course name'),
-              const SizedBox(height: 10),
-              Row(children: [
-                Expanded(child: _field(c, 'Code')),
-                const SizedBox(width: 10),
-                Expanded(child: _field(s, 'Semester')),
-              ]),
-              const SizedBox(height: 16),
-              Row(children: [
-                Container(width: 20, height: 1, color: AppTheme.border),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text('Chat room',
-                        style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppTheme.textLight,
-                            fontWeight: FontWeight.w500))),
-                Expanded(child: Container(height: 1, color: AppTheme.border)),
-              ]),
-              const SizedBox(height: 12),
-              Row(children: [
-                Expanded(child: _field(ri, 'Room ID')),
-                const SizedBox(width: 10),
-                Expanded(child: _field(rp, 'Password')),
-              ]),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (n.text.isNotEmpty &&
-                        c.text.isNotEmpty &&
-                        ri.text.isNotEmpty &&
-                        rp.text.isNotEmpty) {
-                      _createCourse(n.text, c.text, s.text, ri.text, rp.text);
-                    }
-                  },
-                  child: const Text('Create'),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE5E7EB),
+                          borderRadius: BorderRadius.circular(2.5),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Create New Course',
+                      style: GoogleFonts.inter(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF111827),
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Set up a new communication room for your students',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: const Color(0xFF6B7280),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    _premiumField(n, 'Course Name', Icons.menu_book_rounded),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(child: _premiumField(c, 'Code', Icons.tag)),
+                        const SizedBox(width: 16),
+                        Expanded(
+                            child: _premiumField(
+                                s, 'Semester', Icons.date_range_rounded)),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Container(
+                                height: 1, color: const Color(0xFFF3F4F6))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'Chat Room Credentials',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF9CA3AF),
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                            child: Container(
+                                height: 1, color: const Color(0xFFF3F4F6))),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: _premiumField(
+                                ri, 'Room ID', Icons.meeting_room_rounded)),
+                        const SizedBox(width: 16),
+                        Expanded(
+                            child: _premiumField(
+                                rp, 'Password', Icons.lock_rounded,
+                                obscure: true)),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    GestureDetector(
+                      onTap: isCreating
+                          ? null
+                          : () async {
+                              if (n.text.isNotEmpty &&
+                                  c.text.isNotEmpty &&
+                                  ri.text.isNotEmpty &&
+                                  rp.text.isNotEmpty) {
+                                setModalState(() => isCreating = true);
+                                await _createCourse(
+                                    n.text, c.text, s.text, ri.text, rp.text);
+                                if (mounted) {
+                                  setModalState(() => isCreating = false);
+                                }
+                              }
+                            },
+                      child: Container(
+                        height: 54,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF10B981), Color(0xFF059669)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF10B981).withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            )
+                          ],
+                        ),
+                        child: Center(
+                          child: isCreating
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : Text(
+                                  'Create Room',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   void _showJoin() {
-    final ri = TextEditingController(), rp = TextEditingController();
+    final ri = TextEditingController();
+    final rp = TextEditingController();
+    bool isJoining = false;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: EdgeInsets.fromLTRB(
-            24, 20, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                      color: AppTheme.borderStrong,
-                      borderRadius: BorderRadius.circular(2))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
             ),
-            const SizedBox(height: 20),
-            Text('Join room',
-                style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.3)),
-            const SizedBox(height: 2),
-            Text('Enter your teacher\'s room credentials',
-                style:
-                    GoogleFonts.inter(fontSize: 13, color: AppTheme.textLight)),
-            const SizedBox(height: 20),
-            _field(ri, 'Room ID'),
-            const SizedBox(height: 10),
-            _field(rp, 'Password', obscure: true),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (ri.text.isNotEmpty && rp.text.isNotEmpty) {
-                    _join(ri.text, rp.text);
-                  }
-                },
-                child: const Text('Join'),
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 40,
+                    offset: const Offset(0, 10),
+                  )
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE5E7EB),
+                        borderRadius: BorderRadius.circular(2.5),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Join Room',
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF111827),
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Enter your teacher\'s room credentials to connect',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: const Color(0xFF6B7280),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  _premiumField(ri, 'Room ID', Icons.meeting_room_rounded),
+                  const SizedBox(height: 16),
+                  _premiumField(rp, 'Password', Icons.lock_rounded,
+                      obscure: true),
+                  const SizedBox(height: 32),
+                  GestureDetector(
+                    onTap: isJoining
+                        ? null
+                        : () async {
+                            if (ri.text.isNotEmpty && rp.text.isNotEmpty) {
+                              setModalState(() => isJoining = true);
+                              await _join(ri.text, rp.text);
+                              if (mounted) {
+                                setModalState(() => isJoining = false);
+                              }
+                            }
+                          },
+                    child: Container(
+                      height: 54,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF10B981), Color(0xFF059669)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF10B981).withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          )
+                        ],
+                      ),
+                      child: Center(
+                        child: isJoining
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : Text(
+                                'Join Room',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _field(TextEditingController ctl, String label,
+  Widget _premiumField(TextEditingController ctl, String hint, IconData icon,
       {bool obscure = false}) {
-    return TextField(
-      controller: ctl,
-      obscureText: obscure,
-      style: GoogleFonts.inter(fontSize: 14),
-      decoration: InputDecoration(labelText: label),
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: TextField(
+        controller: ctl,
+        obscureText: obscure,
+        style: GoogleFonts.inter(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF111827),
+        ),
+        decoration: InputDecoration(
+          icon: Icon(icon, size: 20, color: const Color(0xFF9CA3AF)),
+          hintText: hint,
+          hintStyle: GoogleFonts.inter(
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xFF9CA3AF),
+          ),
+          border: InputBorder.none,
+        ),
+      ),
     );
   }
 }
