@@ -1245,9 +1245,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Expanded(
-                              child:
-                                  _premiumField(c, 'Course Code', Icons.tag)),
+                          Expanded(child: _premiumField(c, 'Code', Icons.tag)),
                           const SizedBox(width: 16),
                           Expanded(
                               child: _premiumField(
@@ -1275,18 +1273,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                               ),
                             ),
                             const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: _premiumField(ri, 'Room ID',
-                                        Icons.meeting_room_rounded)),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                    child: _premiumField(
-                                        rp, 'Password', Icons.lock_rounded,
-                                        obscure: true)),
-                              ],
-                            ),
+                            _premiumField(
+                                ri, 'Room ID', Icons.meeting_room_rounded),
+                            const SizedBox(height: 12),
+                            _premiumField(rp, 'Password', Icons.lock_rounded,
+                                obscure: true),
                           ],
                         ),
                       ),
@@ -1301,7 +1292,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                                     rp.text.isNotEmpty) {
                                   setModalState(() => isCreating = true);
                                   await _createCourse(
-                                      n.text, c.text, s.text, ri.text, rp.text);
+                                      n.text.trim(),
+                                      c.text.trim(),
+                                      s.text.trim(),
+                                      ri.text.trim(),
+                                      rp.text);
                                   if (mounted) {
                                     setModalState(() => isCreating = false);
                                   }
@@ -1440,7 +1435,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           : () async {
                               if (ri.text.isNotEmpty && rp.text.isNotEmpty) {
                                 setModalState(() => isJoining = true);
-                                await _join(ri.text, rp.text);
+                                await _join(ri.text.trim(), rp.text);
                                 if (mounted) {
                                   setModalState(() => isJoining = false);
                                 }
