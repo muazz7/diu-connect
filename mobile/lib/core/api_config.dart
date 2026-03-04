@@ -1,14 +1,10 @@
-import 'package:flutter/foundation.dart';
+// API Configuration
 
 class ApiConfig {
   static String get baseUrl {
-    if (kIsWeb) {
-      // Use relative URL on web to bypass any domain or CORS redirect issues
-      return '/api';
-    }
-
-    // For mobile (Android/iOS), always use the live Vercel backend
-    // for both debug testing and production release
+    // Always use the absolute live URL for both Web and Mobile
+    // This prevents "Unsupported scheme" errors in Flutter web's http package
+    // and correctly bypasses the Vercel domain mismatch redirect.
     return 'https://diuconnect.vercel.app/api';
   }
 }
